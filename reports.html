@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Expense Tracker</title>
+</head>
+<body>
+    <button class="back-button" onclick="location.href='index.html'">&larr; Back </button>
+    <div class="monthly-expenses">
+        <h2>Monthly Expenses</h2>
+        <div class="month-selector">
+            <label for="month_filter">Select Month</label>
+            <input type="month" id="month_filter">
+        </div>
+        <div class="monthly-total">
+            <span>Total Expenses</span>
+            <strong id="monthly_expense">Rs. 0.00</strong>
+        </div>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Description</th>
+                        <th>Category</th>
+                        <th>Date</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody id="monthly_records"></tbody>
+            </table>
+            <p id="no_monthly_records" class="no-transactions"> No expenses found.</p>
+        </div>
+    </div>
+
+    <div class="expense-chart" id="expense_chart_section">
+        <h2>Expenses by Category</h2>
+        <div id="expense_chart" class="chart-container"></div>
+    </div>
+
+    <script>
+        const transactions = JSON.parse(localStorage.getItem("transaction_data")) || [];
+        const monthFilter = document.getElementById("month_filter");
+        const monthlyExpense = document.getElementById("monthly_expense");
+        const monthlyRecords = document.getElementById("monthly_records");
+        const noMonthlyRecords = document.getElementById("no_monthly_records");
+        const expenseChart = document.getElementById("expense_chart");
+        const expenseChartSection = document.getElementById("expense_chart_section");
+        const expenseCategories = ["Food", "Groceries", "Transportation", "Rent", "Shopping", "Healthcare", "Education",
+            "Entertainment", "Travel", "Subscription", "Other"];
+
+        function getMonthlyRecords() {
+            const month = monthFilter.value;
+            return transactions.filter(item =>
+                item.type === "expense" && item.date.startsWith(month)
+            );
+        }
+
+        function getMonthlyExpense() {
+            const records = getMonthlyRecords();
+            const total = records.reduce((sum, item) => sum + Number(item.amount), 0);
+            monthlyExpense.textContent = `Rs. ${total.toFixed(2)}`;
+            monthlyRecords.innerHTML = "";
+            if (records.length === 0) {
+                noMonthlyRecords.style.display = "block";
+                return;
+            }
+            noMonthlyRecords.style.display = "none";
+            records.forEach(item => {
+                monthlyRecords.innerHTML += `
+                    <tr>
+                        <td>${item.desc}</td>
+                        <td>${item.category}</td>
+                        <td>${item.date}</td>
+                        <td>Rs. ${Number(item.amount).toFixed(2)}</td>
+                    </tr>`;
+            });
+        }
+        function getExpenseChart() {
+            const records = getMonthlyRecords();
+            if (records.length === 0) {
+                expenseChartSection.style.display = "none";
+                return;
+            }
+            expenseChartSection.style.display = "block";
+            const categories = {};
+            expenseCategories.forEach(category => {
+                categories[category] = 0;
+            });
+
+            records.forEach(item => {
+                categories[item.category] += Number(item.amount);
+            });
+            expenseChart.innerHTML = "";
+            const maxAmount = Math.max(...Object.values(categories), 0);
+            Object.entries(categories).forEach(([category, amount]) => {
+                const height = maxAmount ? (amount / maxAmount) * 200 : 0;
+                expenseChart.innerHTML += `
+                    <div class="chart-item">
+                        <div class="bar">
+                            <div class="bar-fill" style="height: ${height}px"></div>
+                        </div>
+                        <span class="chart-amount">${amount > 0 ? `Rs. ${amount.toFixed(0)}` : ""}</span>
+                        <span class="chart-category"> ${category}</span>
+                    </div>`;
+            });
+        }
+
+        monthFilter.addEventListener("change", () => {
+            getMonthlyExpense();
+            getExpenseChart();
+        });
+
+        const today = new Date();
+        monthFilter.value = today.toISOString().slice(0, 7);
+        getMonthlyExpense();
+        getExpenseChart();
+    </script>
+
+</body>
+</html>

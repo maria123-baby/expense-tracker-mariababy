@@ -23,16 +23,12 @@
                 <p id="balance">Rs. 0.00</p>
             </div>
         </div>
-
-
-        <!-- Add Transaction Buttons -->
+        <div class="button-container">
+      <button class="view-report-btn" onclick="location.href='reports.html'">View Reports</button>
         <div class="transaction-buttons">
-            <button id="add_income" class="income-btn">
-                + Add Income
-            </button>
-            <button id="add_expense" class="expense-btn">
-                + Add Expense
-            </button>
+            <button id="add_income" class="income-btn">Add Income</button>
+            <button id="add_expense" class="expense-btn">Add Expense</button>
+        </div>
         </div>
 
         <div id="form_container" class="form-container hidden">
@@ -86,8 +82,7 @@
             <p id="no_transactions" class="no-transactions"> No transactions found.</p>
         </div>
     </div>
-
+    
     <script src="script.js"></script>
-
 </body>
 </html>

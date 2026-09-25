@@ -24,7 +24,7 @@ const typeFilter = document.getElementById("type_filter");
 const categoryFilter = document.getElementById("category_filter");
 
 const incomeCategories = ["Salary", "Freelance", "Business", "Investment", "Bonus", "Gift", "Other"];
-const expenseCategories = ["Food", "Groceries", "Transportation", "Rent", "Bills", "Shopping",
+const expenseCategories = ["Food", "Groceries", "Transportation", "Rent", "Shopping",
     "Healthcare", "Education", "Entertainment", "Travel", "Subscription", "Other"];
 
 let transactions = JSON.parse(localStorage.getItem("transaction_data")) || [];
@@ -53,9 +53,26 @@ function loadCategories(categories) {
     });
 }
 
-// Add / Edit transaction
-form.addEventListener("submit", (event) => {
+// Add or Edit transaction
+form.addEventListener("submit", event => {
     event.preventDefault();
+    if (!desc.value.trim()) {
+        alert("Please enter a description.");
+        return;
+    }
+    if (!category.value) {
+        alert("Please select a category.");
+        return;
+    }
+    if (!date.value) {
+        alert("Please select a date.");
+        return;
+    }
+    if (!amount.value || Number(amount.value) <= 0) {
+        alert("Please enter a valid amount.");
+        return;
+    }
+
     const transaction = {
         id: editingId || crypto.randomUUID(),
         type: currentType,
@@ -64,7 +81,6 @@ form.addEventListener("submit", (event) => {
         date: date.value,
         amount: Number(amount.value)
     };
-
     if (editingId) {
         transactions = transactions.map(item =>
             item.id === editingId ? transaction : item
@@ -77,7 +93,7 @@ form.addEventListener("submit", (event) => {
     formContainer.classList.add("hidden");
     editingId = null;
 });
-
+   
 function saveTransactions() {
     localStorage.setItem("transaction_data", JSON.stringify(transactions));
     displayTransactions();
@@ -91,8 +107,7 @@ function displayTransactions() {
     const selectedType = typeFilter.value;
     const selectedCategory = categoryFilter.value;
     const filteredTransactions = transactions.filter(item => {
-        const matchesSearch =
-            item.desc.toLowerCase().includes(searchValue) ||
+        const matchesSearch = item.desc.toLowerCase().includes(searchValue) ||
             item.category.toLowerCase().includes(searchValue);
         const matchesType = selectedType === "all" ||
             item.type === selectedType;
@@ -109,22 +124,13 @@ function displayTransactions() {
 
     filteredTransactions.forEach(item => {
         const row = document.createElement("tr");
-        const amountClass =
-            item.type === "income"
-                ? "income-text"
-                : "expense-text";
-        const amountSign =
-            item.type === "income"
-                ? "+"
-                : "-";
+        const amountClass = item.type === "income" ? "income-text" : "expense-text";
         row.innerHTML = `
             <td>${item.desc}</td>
             <td>${capitalize(item.type)}</td>
             <td>${item.category}</td>
             <td>${item.date}</td>
-            <td class="${amountClass}">
-                ${amountSign}₹${item.amount.toFixed(2)}
-            </td>
+            <td class="${amountClass}"> &#x20B9;${item.amount.toFixed(2)}</td>
             <td>
                 <button class="edit-btn" data-id="${item.id}">Edit</button>
                 <button class="delete-btn" data-id="${item.id}">Delete</button>
@@ -133,14 +139,9 @@ function displayTransactions() {
     });
 }
 
-
-// Capitalize first letter
-
 function capitalize(value) {
-    return value.charAt(0).toUpperCase() +
-           value.slice(1);
+    return value.charAt(0).toUpperCase() + value.slice(1);
 }
-
 
 // Update summary
 function updateSummary() {
@@ -151,12 +152,11 @@ function updateSummary() {
         .filter(item => item.type === "expense")
         .reduce((sum, item) => sum + item.amount, 0);
     const currentBalance = income - expense;
-    totalIncome.textContent =
-        `₹${income.toFixed(2)}`;
+    totalIncome.textContent = `\u20B9${income.toFixed(2)}`;
     totalExpense.textContent =
-        `₹${expense.toFixed(2)}`;
+        `\u20B9${expense.toFixed(2)}`;
     balance.textContent =
-        `₹${currentBalance.toFixed(2)}`;
+        `\u20B9${currentBalance.toFixed(2)}`;
 }
 
 
@@ -195,7 +195,6 @@ displayData.addEventListener("click", (event) => {
         deleteTransaction(id);
     }
     if (event.target.classList.contains("edit-btn")) {
-
         editTransaction(id);
     }
 });
@@ -239,7 +238,6 @@ function deleteTransaction(id) {
     saveTransactions();
 }
 
-
 // Cancel form
 cancelButton.addEventListener("click", () => {
     form.reset();
@@ -252,6 +250,7 @@ search.addEventListener("input", displayTransactions);
 typeFilter.addEventListener("change", displayTransactions);
 categoryFilter.addEventListener("change", displayTransactions);
 
+ 
 displayTransactions();
 updateSummary();
 updateCategoryFilter();
