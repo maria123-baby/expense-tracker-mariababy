@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Expense Tracker</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Expense Tracker</h1>
+        <div class="summary">
+            <div class="summary-card income-card">
+                <h3>Total Income</h3>
+                <p id="total_income">Rs. 0.00</p>
+            </div>
+            <div class="summary-card expense-card">
+                <h3>Total Expenses</h3>
+                <p id="total_expense">Rs. 0.00</p>
+            </div>
+            <div class="summary-card balance-card">
+                <h3>Balance</h3>
+                <p id="balance">Rs. 0.00</p>
+            </div>
+        </div>
+
+
+        <!-- Add Transaction Buttons -->
+        <div class="transaction-buttons">
+            <button id="add_income" class="income-btn">
+                + Add Income
+            </button>
+            <button id="add_expense" class="expense-btn">
+                + Add Expense
+            </button>
+        </div>
+
+        <div id="form_container" class="form-container hidden">
+            <h2 id="form_title">Add Transaction</h2>
+            <form id="form">
+                <label for="desc">Description</label>
+                <input type="text" id="desc" placeholder="Enter description" required>
+                <label for="category">Category</label>
+                <select id="category" required>
+                    <option value="">Select Category</option>
+                </select>
+                <label for="date">Date</label>
+                <input type="date" id="date" required>
+                <label for="amount">Amount</label>
+                <input type="number" id="amount" placeholder="Enter amount" min="0" step="0.01" required>
+                <div class="form-buttons">
+                    <button type="submit" id="add_transaction">Add Transaction</button>
+                    <button type="button" id="cancel_button">Cancel</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters">
+            <input type="text" id="search" placeholder="Search transactions...">
+            <select id="type_filter">
+                <option value="all">All Transactions</option>
+                <option value="income">Income</option>
+                <option value="expense">Expense</option>
+            </select>
+            <select id="category_filter">
+                <option value="all">All Categories</option>
+            </select>
+        </div>
+        <!-- Transaction Table -->
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Description</th>
+                        <th>Type</th>
+                        <th>Category</th>
+                        <th>Date</th>
+                        <th>Amount</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="display_data">
+                </tbody>
+            </table>
+            <p id="no_transactions" class="no-transactions"> No transactions found.</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
